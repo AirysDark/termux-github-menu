@@ -143,8 +143,6 @@ backup_repo() {
 while true; do
   clear
   echo -e "${BLUE}====== GitHub Termux Advanced Menu ======${RESET}"
-    echo -e ${RESET}"${YELLOW}GitHub Path: $GITHUB_DIR${RESET}"
-
   echo -e "🌀 1. Clone a GitHub Repo"
   echo -e "🔄 2. Pull Latest Changes"
   echo -e "📤 3. Push Local Changes (with backup)"
@@ -155,9 +153,9 @@ while true; do
   echo -e "👀 8. Auto-push on File Change"
   echo -e "🗜️ 9. Backup Repo as ZIP"
   echo -e "📂 10. Open GitHub Folder"
-  echo -e "🚪 11. Exit"
   echo -e "📌 12. Pin a Repo"
   echo -e "🧹 13. Unpin a Repo"
+  echo -e "🚪 11. Exit"
   echo -e "${BLUE}=========================================${RESET}"
   read -p "Choose an option [1-11]: " choice
 
