@@ -1,95 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
 
-detect_github_dir() {
-  POSSIBLE_PATHS=(
-    "/storage/emulated/0/GitHub"
-    "$HOME/storage/shared/GitHub"
-    "/sdcard/GitHub"
-    "/mnt/sdcard/GitHub"
-    "/storage/self/primary/GitHub"
-  )
-  for path in "${POSSIBLE_PATHS[@]}"; do
-    if [[ -d "$path" ]]; then
-      echo "$path"
-      return
-    fi
-  done
-  echo "$HOME/GitHub"
-}
-get_token() {
-  if [[ -f "$TOKEN_FILE" ]]; then
-    cat "$TOKEN_FILE"
-  else
-    echo "GitHub token not found. Please create one and save it to $TOKEN_FILE"
-    exit 1
-  fi
-}
-create_github_repo() {
-  read -p "New repo name: " repo_name
-  read -p "Description: " desc
-  read -p "Private? (y/n): " is_private
-  [[ "$is_private" == "y" ]] && visibility="true" || visibility="false"
-
-  token=$(get_token)
-  response=$(curl -s -H "Authorization: token $token"     -d "{\"name\":\"$repo_name\",\"description\":\"$desc\",\"private\":$visibility}"     "$API_URL/user/repos")
-
-  if echo "$response" | grep -q '"ssh_url":'; then
-    echo "✅ Repo created: $(echo "$response" | jq -r .ssh_url)"
-  else
-    echo "❌ Failed: $response"
-  fi
-  read -p "Press Enter to continue..."
-}
-watch_and_push() {
-      select_repo || continue
-  cd "$GITHUB_DIR/$repo" || exit
-  echo "Watching for changes..."
-  while true; do
-
-  clear
-  show_repos
-  echo -e "${RESET}"
-  if [ -d "$GITHUB_DIR" ]; then
-  show_repos
-  else
-    echo "(GitHub directory not found)"
-  fi
-  echo
-
-  if [ -d "$GITHUB_DIR" ]; then
-  show_repos
-  else
-    echo "(GitHub directory not found)"
-  fi
-  echo
-
-    inotifywait -r -e modify,create,delete . &&
-    echo "Change detected. Committing..." &&
-    git add . &&
-    git commit -m "Auto commit: $(date)" &&
-    git push
-  done
-}
-backup_repo() {
-      select_repo || continue
-  ts=$(date +%Y%m%d_%H%M%S)
-  zipfile="$GITHUB_DIR/${repo}_backup_$ts.zip"
-  cd "$GITHUB_DIR" && zip -r "$zipfile" "$repo"
-  echo "✅ Backup saved: $zipfile"
-  read -p "Press Enter to continue..."
-}
-reset_history() {
-  echo -e "\n⚠️  Are you sure you want to reset all pinned and last-used repo data? [y/N]"
-  read -r confirm
-  if [[ "$confirm" == "y" || "$confirm" == "Y" ]]; then
-    rm -f "$PINNED_FILE" "$LAST_USED_FILE"
-    echo "🔄 History and pins cleared."
-  else
-    echo "❌ Cancelled."
-  fi
-  read -p "Press Enter to continue..."
-}
   show_repos
 LAST_USED_FILE="$HOME/.termux_github_last_repo"
 
@@ -125,6 +36,17 @@ LAST_USED_FILE="$HOME/.termux_github_last_repo"
   return 0
 }
 
+reset_history() {
+  echo -e "\n⚠️  Are you sure you want to reset all pinned and last-used repo data? [y/N]"
+  read -r confirm
+  if [[ "$confirm" == "y" || "$confirm" == "Y" ]]; then
+    rm -f "$PINNED_FILE" "$LAST_USED_FILE"
+    echo "🔄 History and pins cleared."
+  else
+    echo "❌ Cancelled."
+  fi
+  read -p "Press Enter to continue..."
+}
 
 
 # === GitHub-style Colors ===
@@ -137,6 +59,22 @@ RESET="\033[0m"
 
 
 # Detect valid GitHub working directory
+detect_github_dir() {
+  POSSIBLE_PATHS=(
+    "/storage/emulated/0/GitHub"
+    "$HOME/storage/shared/GitHub"
+    "/sdcard/GitHub"
+    "/mnt/sdcard/GitHub"
+    "/storage/self/primary/GitHub"
+  )
+  for path in "${POSSIBLE_PATHS[@]}"; do
+    if [[ -d "$path" ]]; then
+      echo "$path"
+      return
+    fi
+  done
+  echo "$HOME/GitHub"
+}
 
 GITHUB_DIR="$(detect_github_dir)"
 mkdir -p "$GITHUB_DIR"
@@ -149,9 +87,71 @@ USERNAME="$(git config --global user.name)"
 
 mkdir -p "$GITHUB_DIR"
 
+get_token() {
+  if [[ -f "$TOKEN_FILE" ]]; then
+    cat "$TOKEN_FILE"
+  else
+    echo "GitHub token not found. Please create one and save it to $TOKEN_FILE"
+    exit 1
+  fi
+}
 
+create_github_repo() {
+  read -p "New repo name: " repo_name
+  read -p "Description: " desc
+  read -p "Private? (y/n): " is_private
+  [[ "$is_private" == "y" ]] && visibility="true" || visibility="false"
 
+  token=$(get_token)
+  response=$(curl -s -H "Authorization: token $token"     -d "{\"name\":\"$repo_name\",\"description\":\"$desc\",\"private\":$visibility}"     "$API_URL/user/repos")
 
+  if echo "$response" | grep -q '"ssh_url":'; then
+    echo "✅ Repo created: $(echo "$response" | jq -r .ssh_url)"
+  else
+    echo "❌ Failed: $response"
+  fi
+  read -p "Press Enter to continue..."
+}
+
+watch_and_push() {
+      select_repo || continue
+  cd "$GITHUB_DIR/$repo" || exit
+  echo "Watching for changes..."
+  while true; do
+
+  clear
+  show_repos
+  echo -e "${RESET}"
+  if [ -d "$GITHUB_DIR" ]; then
+  show_repos
+  else
+    echo "(GitHub directory not found)"
+  fi
+  echo
+
+  if [ -d "$GITHUB_DIR" ]; then
+  show_repos
+  else
+    echo "(GitHub directory not found)"
+  fi
+  echo
+
+    inotifywait -r -e modify,create,delete . &&
+    echo "Change detected. Committing..." &&
+    git add . &&
+    git commit -m "Auto commit: $(date)" &&
+    git push
+  done
+}
+
+backup_repo() {
+      select_repo || continue
+  ts=$(date +%Y%m%d_%H%M%S)
+  zipfile="$GITHUB_DIR/${repo}_backup_$ts.zip"
+  cd "$GITHUB_DIR" && zip -r "$zipfile" "$repo"
+  echo "✅ Backup saved: $zipfile"
+  read -p "Press Enter to continue..."
+}
 
 while true; do
   clear
