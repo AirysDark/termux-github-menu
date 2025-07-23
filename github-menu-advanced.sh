@@ -4,7 +4,6 @@
   show_repos
 LAST_USED_FILE="$HOME/.termux_github_last_repo"
 
-select_repo() {
   echo -e "\n📂 Available repositories in $GITHUB_DIR:"
   show_repos
 
