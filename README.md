@@ -49,6 +49,14 @@ chmod +x github-menu-advanced.sh
 ./github-menu-advanced.sh
 ```
 
+## Download and install
+```bash
+git clone https://github.com/AirysDark/termux-github-menu.git
+cd termux-github-menu
+chmod +x github-menu-advanced.sh
+./github-menu-advanced.sh
+```
+
 ## 🔐 License
 
 MIT License
