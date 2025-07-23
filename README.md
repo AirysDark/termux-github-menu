@@ -58,6 +58,14 @@ chmod +x github-menu-advanced.sh
 ./github-menu-advanced.sh
 ```
 
+## test
+```bash
+unzip termux-github-menu.zip -d ~/termux-github-menu
+cd ~/termux-github-menu
+chmod +x github-menu-advanced.sh
+./github-menu-advanced.sh
+```
+
 ## 🔐 License
 
 MIT License
