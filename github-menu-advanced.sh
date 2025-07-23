@@ -35,7 +35,6 @@ PINNED_FILE="$HOME/.termux_github_pinned"
 
 mkdir -p "$GITHUB_DIR"
 
-show_repos() {
   echo -e "\n📂 Repositories in $GITHUB_DIR:"
   if [[ -f "$PINNED_FILE" ]]; then
     echo -e "${YELLOW}📌 Pinned:${RESET}"
@@ -140,6 +139,19 @@ reset_history() {
   read -p "Press Enter to continue..."
 }
 
+remove_all_repos() {
+  echo -e "\n⚠️  This will DELETE ALL folders inside $GITHUB_DIR. Proceed? [y/N]"
+  read -r confirm
+  if [[ "$confirm" == "y" || "$confirm" == "Y" ]]; then
+    rm -rf "$GITHUB_DIR"/*
+    echo "🗑️  All repositories deleted."
+  else
+    echo "❌ Cancelled."
+  fi
+  read -p "Press Enter to continue..."
+}
+
+
 watch_and_push() {
   select_repo || return
   cd "$GITHUB_DIR/$repo" || return
@@ -165,7 +177,6 @@ backup_repo() {
 # MAIN MENU LOOP
 while true; do
   clear
-  show_repos
   echo -e "${BLUE}====== GitHub Termux Advanced Menu ======${RESET}"
   echo -e "🌀 1. Clone a GitHub Repo"
   echo -e "🔄 2. Pull Latest Changes"
@@ -180,6 +191,7 @@ while true; do
   echo -e "📌 12. Pin a Repo"
   echo -e "🧹 13. Unpin a Repo"
   echo -e "♻️ 14. Reset Pins & History"
+  echo -e "🗑️ 15. Delete All Repositories"
   echo -e "🚪 11. Exit"
   echo -e "${BLUE}=========================================${RESET}"
   read -p "Choose an option [1-14]: " choice
@@ -200,5 +212,7 @@ while true; do
     13) unpin_repo;;
     14) reset_history;;
     *) echo "❌ Invalid option!"; sleep 1;;
+    15)
+      remove_all_repos ;;
   esac
 done
