@@ -1,71 +1,81 @@
 # Termux GitHub Menu Script
 
-A powerful Termux bash script for managing GitHub repositories, tailored for mobile devices with variable storage locations.
+An advanced GitHub management tool built for Termux. Automates common Git tasks and GitHub API functions with a user-friendly bash menu.
+
+---
 
 ## 📦 Features
 
-- Clone, pull, push GitHub repositories
-- Automatically backs up repos as `.zip` before pushing
-- Auto-push on file changes using `inotifywait`
-- GitHub API integration to create new repositories
-- Scans common Android storage paths to detect `/GitHub` directory
-- Works with both public and private repos
-- Friendly text-based menu
+### 🔧 Git Operations
+- Clone any GitHub repository
+- Pull latest changes
+- Push local changes (auto backup before push)
+- Commit all changes
+- View Git status
+- Set Git global config (username + email)
 
-## 📂 Storage Location Detection
+### 🌐 GitHub API (via personal token)
+- Create new GitHub repositories
+- Use private/public toggle
+- Token stored securely at `$HOME/.github_token`
 
-Scans these locations for your GitHub working directory:
-- `/storage/emulated/0/GitHub`
-- `/sdcard/GitHub`
-- `$HOME/storage/shared/GitHub`
-- `/mnt/sdcard/GitHub`
-- `/storage/self/primary/GitHub`
+### 📌 Repo Management
+- Pin frequently used repos
+- Unpin repos
+- Auto-save last used repo
+- Reset all pin/history data
+- List pinned and unpinned repos (pinned always shown first)
 
-Defaults to `$HOME/GitHub` if none are found.
+### 📁 File & Repo Tools
+- Watch for file changes and auto-push using `inotifywait`
+- Backup repo as ZIP with timestamp
+- Delete all local repos
 
-## 🧪 Requirements
+### 📂 Navigation
+- Open GitHub folder in Termux
+- Browse repos visually by name
 
-Install required packages in Termux:
+---
+
+## 📜 How to Use
+
 ```bash
-pkg install git curl zip inotify-tools jq
-termux-setup-storage
+chmod +x github-menu-advanced-pinned-enhanced.sh
+./github-menu-advanced-pinned-enhanced.sh
 ```
 
-Also, create a GitHub token and save it:
+---
+
+## 🔐 Setup GitHub Token
+
+1. Create a personal access token (classic) from [GitHub Developer Settings](https://github.com/settings/tokens).
+2. Save it to a file:
+
 ```bash
-echo "your_github_token_here" > ~/.github_token
+echo "your_token_here" > ~/.github_token
 chmod 600 ~/.github_token
 ```
 
-## 🚀 How to Use
+---
 
-1. Make the script executable:
-```bash
-chmod +x github-menu-advanced.sh
-```
+## ✅ Requirements
 
-2. Run it:
-```bash
-./github-menu-advanced.sh
-```
+- `git`
+- `curl`
+- `jq`
+- `zip`
+- `inotify-tools` (install via `pkg install inotify-tools`)
+- `coreutils` (for `comm`, `sort`, etc.)
 
-## Download and install
-```bash
-rm -rf termux-github-menu
-git clone https://github.com/AirysDark/termux-github-menu.git
-cd termux-github-menu
-chmod +x github-menu-advanced.sh
-./github-menu-advanced.sh
-```
+---
 
-## test
-```bash
-unzip termux-github-menu.zip -d ~/termux-github-menu
-cd ~/termux-github-menu
-chmod +x github-menu-advanced.sh
-./github-menu-advanced.sh
-```
+## 🧪 Coming Soon (optional ideas)
 
-## 🔐 License
+- Grouped pins and tags
+- Favorite/starred repo marking
+- GitHub releases manager
+- Auto-token fetch from GitHub CLI
 
-MIT License
+---
+
+Made for power users who live in Termux 🌀
