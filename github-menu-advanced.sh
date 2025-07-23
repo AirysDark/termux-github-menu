@@ -47,6 +47,7 @@ mkdir -p "$GITHUB_DIR"
     echo "(GitHub directory not found)"
   fi
   echo
+}
 
 get_token() {
   if [[ -f "$TOKEN_FILE" ]]; then
@@ -217,7 +218,7 @@ while true; do
     8) watch_and_push;;
     9) backup_repo;;
     10) cd "$GITHUB_DIR"; ls; read -p "Press Enter to continue...";;
-      list_repos ;;
+    11) list_repos ;;
     12) pin_repo;;
     13) unpin_repo;;
     14) reset_history;;
