@@ -194,6 +194,7 @@ backup_repo() {
 while true; do
   clear
   echo -e "${BLUE}====== GitHub Termux Advanced Menu ======${RESET}"
+  echo -e "🧾 Version: 1.0.1"
   echo -e "🌀 1. Clone a GitHub Repo"
   echo -e "🔄 2. Pull Latest Changes"
   echo -e "📤 3. Push Local Changes (with backup)"
