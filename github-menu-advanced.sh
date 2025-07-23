@@ -47,7 +47,6 @@ mkdir -p "$GITHUB_DIR"
     echo "(GitHub directory not found)"
   fi
   echo
-}
 
 get_token() {
   if [[ -f "$TOKEN_FILE" ]]; then
