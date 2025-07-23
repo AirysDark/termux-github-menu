@@ -35,18 +35,6 @@ PINNED_FILE="$HOME/.termux_github_pinned"
 
 mkdir -p "$GITHUB_DIR"
 
-echo -e "\n📂 Repositories in $GITHUB_DIR:"
-if [[ -f "$PINNED_FILE" ]]; then
-  echo -e "${YELLOW}📌 Pinned:${RESET}"
-  cat "$PINNED_FILE"
-fi
-echo -e "${CYAN}📁 All Repos:${RESET}"
-if [ -d "$GITHUB_DIR" ]; then
-  ls -1 "$GITHUB_DIR" | grep -v '^\.' || echo "(No repos found)"
-else
-  echo "(GitHub directory not found)"
-fi
-
 get_token() {
   if [[ -f "$TOKEN_FILE" ]]; then
     cat "$TOKEN_FILE"
@@ -165,7 +153,12 @@ watch_and_push() {
 }
 
 list_repos() {
-  echo -e "\n📁 Repositories in $GITHUB_DIR:"
+  echo -e "\n📂 Repositories in $GITHUB_DIR:"
+  if [[ -f "$PINNED_FILE" ]]; then
+    echo -e "${YELLOW}📌 Pinned:${RESET}"
+    cat "$PINNED_FILE"
+  fi
+  echo -e "${CYAN}📁 All Repos:${RESET}"
   if [ -d "$GITHUB_DIR" ]; then
     ls -1 "$GITHUB_DIR" | grep -v '^\.' || echo "(No repos found)"
   else
