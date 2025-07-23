@@ -1,11 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
 
+  show_repos
 LAST_USED_FILE="$HOME/.termux_github_last_repo"
 
 select_repo() {
   echo -e "\n📂 Available repositories in $GITHUB_DIR:"
-  mapfile -t repos < <(ls -1 "$GITHUB_DIR" | grep -v '^\.')
+  show_repos
 
   if [[ ${#repos[@]} -eq 0 ]]; then
     echo "❌ No repositories found."
@@ -107,17 +108,17 @@ watch_and_push() {
   while true; do
 
   clear
-  echo -e "${CYAN}" "\n📂 Repositories in $GITHUB_DIR:"
+  show_repos
   echo -e "${RESET}"
   if [ -d "$GITHUB_DIR" ]; then
-    ls -1 "$GITHUB_DIR" | grep -v '^\.' || echo "(No repos found)"
+  show_repos
   else
     echo "(GitHub directory not found)"
   fi
   echo
 
   if [ -d "$GITHUB_DIR" ]; then
-    ls -1 "$GITHUB_DIR" | grep -v '^\.' || echo "(No repos found)"
+  show_repos
   else
     echo "(GitHub directory not found)"
   fi
@@ -156,10 +157,16 @@ while true; do
   echo -e "🗜️ 9. Backup Repo as ZIP"
   echo -e "📂 10. Open GitHub Folder"
   echo -e "🚪 11. Exit"
+  echo -e "📌 12. Pin a Repo"
+  echo -e "🧹 13. Unpin a Repo"
   echo -e "${BLUE}=========================================${RESET}"
   read -p "Choose an option [1-11]: " choice
 
   case $choice in
+    12)
+      pin_repo ;;
+    13)
+      unpin_repo ;;
     1)
       read -p "GitHub Repo URL: " url
       cd "$GITHUB_DIR" && git clone "$url"
