@@ -1,5 +1,50 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
+
+LAST_USED_FILE="$HOME/.termux_github_last_repo"
+
+select_repo() {
+  echo -e "\n📂 Available repositories in $GITHUB_DIR:"
+  mapfile -t repos < <(ls -1 "$GITHUB_DIR" | grep -v '^\.')
+
+  if [[ ${#repos[@]} -eq 0 ]]; then
+    echo "❌ No repositories found."
+    return 1
+  fi
+
+  echo "Type part of the repo name (leave empty for last used):"
+  read -p "🔍 Repo: " input
+
+  if [[ -z "$input" && -f "$LAST_USED_FILE" ]]; then
+    repo=$(cat "$LAST_USED_FILE")
+    echo "🔁 Using last used repo: $repo"
+  else
+    for r in "${repos[@]}"; do
+      if [[ "$r" == *"$input"* ]]; then
+        repo="$r"
+        break
+      fi
+    done
+  fi
+
+  if [[ -z "$repo" ]]; then
+    echo "❌ No match found."
+    return 1
+  fi
+
+  echo "$repo" > "$LAST_USED_FILE"
+  return 0
+}
+
+# === GitHub-style Colors ===
+RED="\033[0;31m"
+GREEN="\033[0;32m"
+BLUE="\033[1;34m"
+CYAN="\033[1;36m"
+YELLOW="\033[1;33m"
+RESET="\033[0m"
+
+
 # Detect valid GitHub working directory
 detect_github_dir() {
   POSSIBLE_PATHS=(
@@ -56,10 +101,28 @@ create_github_repo() {
 }
 
 watch_and_push() {
-  read -p "Enter repo folder name: " repo
+      select_repo || continue
   cd "$GITHUB_DIR/$repo" || exit
   echo "Watching for changes..."
   while true; do
+
+  clear
+  echo -e "${CYAN}" "\n📂 Repositories in $GITHUB_DIR:"
+  echo -e "${RESET}"
+  if [ -d "$GITHUB_DIR" ]; then
+    ls -1 "$GITHUB_DIR" | grep -v '^\.' || echo "(No repos found)"
+  else
+    echo "(GitHub directory not found)"
+  fi
+  echo
+
+  if [ -d "$GITHUB_DIR" ]; then
+    ls -1 "$GITHUB_DIR" | grep -v '^\.' || echo "(No repos found)"
+  else
+    echo "(GitHub directory not found)"
+  fi
+  echo
+
     inotifywait -r -e modify,create,delete . &&
     echo "Change detected. Committing..." &&
     git add . &&
@@ -69,7 +132,7 @@ watch_and_push() {
 }
 
 backup_repo() {
-  read -p "Enter repo folder name: " repo
+      select_repo || continue
   ts=$(date +%Y%m%d_%H%M%S)
   zipfile="$GITHUB_DIR/${repo}_backup_$ts.zip"
   cd "$GITHUB_DIR" && zip -r "$zipfile" "$repo"
@@ -79,20 +142,21 @@ backup_repo() {
 
 while true; do
   clear
-  echo "====== GitHub Termux Advanced Menu ======"
-  echo "GitHub Path: $GITHUB_DIR"
-  echo "1. Clone a GitHub Repo"
-  echo "2. Pull Latest Changes"
-  echo "3. Push Local Changes (with backup)"
-  echo "4. Git Status"
-  echo "5. Commit All Changes"
-  echo "6. Set Git Config (Global)"
-  echo "7. Create GitHub Repo (via API)"
-  echo "8. Auto-push on File Change"
-  echo "9. Backup Repo as ZIP"
-  echo "10. Open GitHub Folder"
-  echo "11. Exit"
-  echo "========================================="
+  echo -e "${BLUE}====== GitHub Termux Advanced Menu ======${RESET}"
+    echo -e ${RESET}"${YELLOW}GitHub Path: $GITHUB_DIR${RESET}"
+
+  echo -e "🌀 1. Clone a GitHub Repo"
+  echo -e "🔄 2. Pull Latest Changes"
+  echo -e "📤 3. Push Local Changes (with backup)"
+  echo -e "📊 4. Git Status"
+  echo -e "📝 5. Commit All Changes"
+  echo -e "⚙️ 6. Set Git Config (Global)"
+  echo -e "📁 7. Create GitHub Repo (via API)"
+  echo -e "👀 8. Auto-push on File Change"
+  echo -e "🗜️ 9. Backup Repo as ZIP"
+  echo -e "📂 10. Open GitHub Folder"
+  echo -e "🚪 11. Exit"
+  echo -e "${BLUE}=========================================${RESET}"
   read -p "Choose an option [1-11]: " choice
 
   case $choice in
