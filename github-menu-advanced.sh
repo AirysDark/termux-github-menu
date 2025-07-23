@@ -156,6 +156,17 @@ watch_and_push() {
   select_repo || return
   cd "$GITHUB_DIR/$repo" || return
   echo "Watching for changes..."
+
+list_repos() {
+  echo -e "\n📁 Repositories in $GITHUB_DIR:"
+  if [ -d "$GITHUB_DIR" ]; then
+    ls -1 "$GITHUB_DIR" | grep -v '^\.' || echo "(No repos found)"
+  else
+    echo "(GitHub directory not found)"
+  fi
+  read -p "Press Enter to continue..."
+}
+
   while true; do
     inotifywait -r -e modify,create,delete . &&
     echo "Change detected. Committing..." &&
@@ -207,7 +218,7 @@ while true; do
     8) watch_and_push;;
     9) backup_repo;;
     10) cd "$GITHUB_DIR"; ls; read -p "Press Enter to continue...";;
-    11) echo "Goodbye!" && exit 0;;
+      list_repos ;;
     12) pin_repo;;
     13) unpin_repo;;
     14) reset_history;;
