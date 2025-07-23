@@ -35,6 +35,19 @@ PINNED_FILE="$HOME/.termux_github_pinned"
 
 mkdir -p "$GITHUB_DIR"
 
+  echo -e "\n📂 Repositories in $GITHUB_DIR:"
+  if [[ -f "$PINNED_FILE" ]]; then
+    echo -e "${YELLOW}📌 Pinned:${RESET}"
+    cat "$PINNED_FILE"
+  fi
+  echo -e "${CYAN}📁 All Repos:${RESET}"
+  if [ -d "$GITHUB_DIR" ]; then
+    ls -1 "$GITHUB_DIR" | grep -v '^\.' || echo "(No repos found)"
+  else
+    echo "(GitHub directory not found)"
+  fi
+}
+
 get_token() {
   if [[ -f "$TOKEN_FILE" ]]; then
     cat "$TOKEN_FILE"
@@ -51,9 +64,7 @@ create_github_repo() {
   [[ "$is_private" == "y" ]] && visibility="true" || visibility="false"
 
   token=$(get_token)
-  response=$(curl -s -H "Authorization: token $token" \
-    -d "{\"name\":\"$repo_name\",\"description\":\"$desc\",\"private\":$visibility}" \
-    "$API_URL/user/repos")
+  response=$(curl -s -H "Authorization: token $token"     -d "{"name":"$repo_name","description":"$desc","private":$visibility}"     "$API_URL/user/repos")
 
   if echo "$response" | grep -q '"ssh_url":'; then
     echo "✅ Repo created: $(echo "$response" | jq -r .ssh_url)"
@@ -65,18 +76,16 @@ create_github_repo() {
 
 select_repo() {
   mapfile -t repos < <(ls -1 "$GITHUB_DIR" | grep -v '^\.')
-
   if [[ ${#repos[@]} -eq 0 ]]; then
     echo "❌ No repositories found."
     return 1
   fi
-
   echo -e "${YELLOW}📌 Pinned:${RESET}"
-  [[ -f "$PINNED_FILE" ]] && cat "$PINNED_FILE"
-
+  if [[ -f "$PINNED_FILE" ]]; then
+    cat "$PINNED_FILE"
+  fi
   echo -e "${CYAN}Type part of the repo name (leave blank for last used):${RESET}"
   read -p "🔍 Repo: " input
-
   if [[ -z "$input" && -f "$LAST_USED_FILE" ]]; then
     repo=$(cat "$LAST_USED_FILE")
     echo "🔁 Using last used repo: $repo"
@@ -88,12 +97,10 @@ select_repo() {
       fi
     done
   fi
-
   if [[ -z "$repo" ]]; then
     echo "❌ No match found."
     return 1
   fi
-
   echo "$repo" > "$LAST_USED_FILE"
   grep -qxF "$repo" "$PINNED_FILE" 2>/dev/null || echo "$repo" >> "$PINNED_FILE"
   return 0
@@ -139,18 +146,11 @@ remove_all_repos() {
   read -p "Press Enter to continue..."
 }
 
+
 watch_and_push() {
   select_repo || return
   cd "$GITHUB_DIR/$repo" || return
   echo "Watching for changes..."
-  while true; do
-    inotifywait -r -e modify,create,delete . &&
-    echo "Change detected. Committing..." &&
-    git add . &&
-    git commit -m "Auto commit: $(date)" &&
-    git push
-  done
-}
 
 list_repos() {
   echo -e "\n📂 Repositories in $GITHUB_DIR:"
@@ -160,11 +160,24 @@ list_repos() {
   fi
   echo -e "${CYAN}📁 All Repos:${RESET}"
   if [ -d "$GITHUB_DIR" ]; then
-    ls -1 "$GITHUB_DIR" | grep -v '^\.' || echo "(No repos found)"
+    if [[ -f "$PINNED_FILE" ]]; then
+      comm -23 <(ls -1 "$GITHUB_DIR" | grep -v '^\.' | sort) <(sort "$PINNED_FILE")
+    else
+      ls -1 "$GITHUB_DIR" | grep -v '^\.' || echo "(No repos found)"
+    fi
   else
     echo "(GitHub directory not found)"
   fi
   read -p "Press Enter to continue..."
+}
+
+  while true; do
+    inotifywait -r -e modify,create,delete . &&
+    echo "Change detected. Committing..." &&
+    git add . &&
+    git commit -m "Auto commit: $(date)" &&
+    git push
+  done
 }
 
 backup_repo() {
@@ -176,7 +189,7 @@ backup_repo() {
   read -p "Press Enter to continue..."
 }
 
-# === MAIN MENU LOOP ===
+# MAIN MENU LOOP
 while true; do
   clear
   echo -e "${BLUE}====== GitHub Termux Advanced Menu ======${RESET}"
@@ -190,13 +203,13 @@ while true; do
   echo -e "👀 8. Auto-push on File Change"
   echo -e "🗜️ 9. Backup Repo as ZIP"
   echo -e "📂 10. Open GitHub Folder"
-  echo -e "🚪 11. List All Repos"
   echo -e "📌 12. Pin a Repo"
   echo -e "🧹 13. Unpin a Repo"
   echo -e "♻️ 14. Reset Pins & History"
   echo -e "🗑️ 15. Delete All Repositories"
+  echo -e "🚪 11. Exit"
   echo -e "${BLUE}=========================================${RESET}"
-  read -p "Choose an option [1-15]: " choice
+  read -p "Choose an option [1-14]: " choice
 
   case $choice in
     1) read -p "Enter GitHub Repo URL: " url; cd "$GITHUB_DIR" && git clone "$url"; read -p "Press Enter to continue...";;
@@ -209,11 +222,12 @@ while true; do
     8) watch_and_push;;
     9) backup_repo;;
     10) cd "$GITHUB_DIR"; ls; read -p "Press Enter to continue...";;
-    11) list_repos;;
+    11) list_repos ;;
     12) pin_repo;;
     13) unpin_repo;;
     14) reset_history;;
-    15) remove_all_repos;;
     *) echo "❌ Invalid option!"; sleep 1;;
+    15)
+      remove_all_repos ;;
   esac
 done
