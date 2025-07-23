@@ -1,4 +1,14 @@
 #!/data/data/com.termux/files/usr/bin/bash
+# Termux GitHub Menu Script
+# Version: 1.0.0
+# Author: AirysDark
+# Description: A terminal GitHub manager with pinning, sync, and GitHub API tools
+
+if [[ "$1" == "--version" ]]; then
+  echo "Termux GitHub Menu Script v1.0.0"
+  exit 0
+fi
+
 
 # === GitHub-style Colors ===
 RED="\033[0;31m"
@@ -192,7 +202,7 @@ backup_repo() {
 # MAIN MENU LOOP
 while true; do
   clear
-  echo -e "${BLUE}====== GitHub Termux Advanced Menu ======${RESET}"
+  echo -e "${BLUE}====== GitHub Termux Menu v1.0.0 ======${RESET}"
   echo -e "🌀 1. Clone a GitHub Repo"
   echo -e "🔄 2. Pull Latest Changes"
   echo -e "📤 3. Push Local Changes (with backup)"
