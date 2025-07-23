@@ -36,6 +36,19 @@ LAST_USED_FILE="$HOME/.termux_github_last_repo"
   return 0
 }
 
+reset_history() {
+  echo -e "\n⚠️  Are you sure you want to reset all pinned and last-used repo data? [y/N]"
+  read -r confirm
+  if [[ "$confirm" == "y" || "$confirm" == "Y" ]]; then
+    rm -f "$PINNED_FILE" "$LAST_USED_FILE"
+    echo "🔄 History and pins cleared."
+  else
+    echo "❌ Cancelled."
+  fi
+  read -p "Press Enter to continue..."
+}
+
+
 # === GitHub-style Colors ===
 RED="\033[0;31m"
 GREEN="\033[0;32m"
@@ -155,6 +168,7 @@ while true; do
   echo -e "📂 10. Open GitHub Folder"
   echo -e "📌 12. Pin a Repo"
   echo -e "🧹 13. Unpin a Repo"
+  echo -e "♻️ 14. Reset Pins & History"
   echo -e "🚪 11. Exit"
   echo -e "${BLUE}=========================================${RESET}"
   read -p "Choose an option [1-11]: " choice
@@ -164,6 +178,8 @@ while true; do
       pin_repo ;;
     13)
       unpin_repo ;;
+    14)
+      reset_history ;;
     1)
       read -p "GitHub Repo URL: " url
       cd "$GITHUB_DIR" && git clone "$url"
