@@ -217,7 +217,7 @@ while true; do
   echo -e "🧹 13. Unpin a Repo"
   echo -e "♻️ 14. Reset Pins & History"
   echo -e "🗑️ 15. Delete All Repositories"
-  echo -e "16. 🚑 Git Repair Toolkit"
+  echo -e "🚑 16. Git Repair Toolkit"
   echo -e "${BLUE}=========================================${RESET}"
 read -p "Choose an option [1-16]: " choice
 
@@ -237,7 +237,6 @@ read -p "Choose an option [1-16]: " choice
     13) unpin_repo;;
     14) reset_history;;
     15) remove_all_repos;;
-    *) echo "❌ Invalid option!"; sleep 1;;
     16)
       select_repo || continue
       cd "$GITHUB_DIR/$repo" || continue
@@ -259,5 +258,6 @@ read -p "Choose an option [1-16]: " choice
       esac
       read -p "Press Enter to continue..."
       ;;
+      *) echo "❌ Invalid option!"; sleep 1;;
   esac
 done
