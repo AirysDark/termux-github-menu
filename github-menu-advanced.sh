@@ -217,12 +217,27 @@ while true; do
   echo -e "🧹 13. Unpin a Repo"
   echo -e "♻️ 14. Reset Pins & History"
   echo -e "🗑️ 15. Delete All Repositories"
-echo -e "16. 🚑 Git Repair Toolkit"
+  echo -e "16. 🚑 Git Repair Toolkit"
   echo -e "${BLUE}=========================================${RESET}"
 read -p "Choose an option [1-16]: " choice
 
-case $choice in
-
+  case $choice in
+    1) read -p "Enter GitHub Repo URL: " url; cd "$GITHUB_DIR" && git clone "$url"; read -p "Press Enter to continue...";;
+    2) select_repo || continue; cd "$GITHUB_DIR/$repo" && git pull; read -p "Press Enter to continue...";;
+    3) backup_repo; cd "$GITHUB_DIR/$repo" && git add . && read -p "Commit message: " msg && git commit -m "$msg" && git push; read -p "Press Enter to continue...";;
+    4) select_repo || continue; cd "$GITHUB_DIR/$repo" && git status; read -p "Press Enter to continue...";;
+    5) select_repo || continue; cd "$GITHUB_DIR/$repo" && git add . && read -p "Commit message: " msg && git commit -m "$msg"; read -p "Press Enter to continue...";;
+    6) read -p "Git username: " name; git config --global user.name "$name"; read -p "Git email: " email; git config --global user.email "$email"; echo "✅ Git config updated."; read -p "Press Enter to continue...";;
+    7) create_github_repo;;
+    8) watch_and_push;;
+    9) backup_repo;;
+    10) cd "$GITHUB_DIR"; ls; read -p "Press Enter to continue...";;
+    11) list_repos;;
+    12) pin_repo;;
+    13) unpin_repo;;
+    14) reset_history;;
+    15) remove_all_repos;;
+    *) echo "❌ Invalid option!"; sleep 1;;
     16)
       select_repo || continue
       cd "$GITHUB_DIR/$repo" || continue
@@ -244,21 +259,5 @@ case $choice in
       esac
       read -p "Press Enter to continue..."
       ;;
-  case $choice in
-    1) read -p "Enter GitHub Repo URL: " url; cd "$GITHUB_DIR" && git clone "$url"; read -p "Press Enter to continue...";;
-    2) select_repo || continue; cd "$GITHUB_DIR/$repo" && git pull; read -p "Press Enter to continue...";;
-    3) backup_repo; cd "$GITHUB_DIR/$repo" && git add . && read -p "Commit message: " msg && git commit -m "$msg" && git push; read -p "Press Enter to continue...";;
-    4) select_repo || continue; cd "$GITHUB_DIR/$repo" && git status; read -p "Press Enter to continue...";;
-    5) select_repo || continue; cd "$GITHUB_DIR/$repo" && git add . && read -p "Commit message: " msg && git commit -m "$msg"; read -p "Press Enter to continue...";;
-    6) read -p "Git username: " name; git config --global user.name "$name"; read -p "Git email: " email; git config --global user.email "$email"; echo "✅ Git config updated."; read -p "Press Enter to continue...";;
-    7) create_github_repo;;
-    8) watch_and_push;;
-    9) backup_repo;;
-    10) cd "$GITHUB_DIR"; ls; read -p "Press Enter to continue...";;
-    11) list_repos;;
-    12) pin_repo;;
-    13) unpin_repo;;
-    14) reset_history;;
-    15) remove_all_repos;;
   esac
 done
