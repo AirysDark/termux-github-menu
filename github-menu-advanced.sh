@@ -306,47 +306,6 @@ while true; do
       esac
       read -p "Press Enter to continue..."
       ;;
-        2) git pull --no-rebase;;
-        3) git pull --rebase;;
-        4) git pull --ff-only;;
-        5) git push --force;;
-        6) git commit --amend;;
-        7) git add . && git commit -am "Auto commit: $(date)" && git push;;
-        8) git log --oneline --graph --all | less;;
-        9) git stash;;
-       10) git stash pop;;
-       11) git reset --hard;;
-       12) echo "❌ Aborted.";;
-        *) echo "⚠️ Invalid sub-option.";;
-      esac
-      read -p "Press Enter to continue..."
-      ;;
-        2) git pull --no-rebase;;
-        3) git pull --rebase;;
-        4) git pull --ff-only;;
-        5) git push --force;;
-        6) git commit --amend;;
-        7) git add . && git commit -am "Auto commit: $(date)" && git push;;
-        8) echo "❌ Aborted.";;
-        *) echo "⚠️ Invalid sub-option.";;
-      esac
-      read -p "Press Enter to continue..."
-      ;;
-          *) echo "⚠️ Invalid option.";;
-        esac
-      fi
-      read -p "Press Enter to continue..."
-      ;;
-    6) read -p "Git username: " name; git config --global user.name "$name"; read -p "Git email: " email; git config --global user.email "$email"; echo "✅ Git config updated."; read -p "Press Enter to continue...";;
-    7) create_github_repo;;
-    8) watch_and_push;;
-    9) backup_repo;;
-    10) cd "$GITHUB_DIR"; ls; read -p "Press Enter to continue...";;
-    11) list_repos;;
-    12) pin_repo;;
-    13) unpin_repo;;
-    14) reset_history;;
-    15) remove_all_repos;;
     17) echo "👋 Exiting..."; exit 0;;
     *) echo "❌ Invalid option!"; sleep 1;;
   esac
