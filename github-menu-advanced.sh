@@ -200,6 +200,7 @@ while true; do
   echo -e "${YELLOW}📌 Pinned Repositories:${RESET}"
   [[ -f "$PINNED_FILE" ]] && cat "$PINNED_FILE" || echo "(None pinned)"
   echo
+while true; do
   echo -e "${BLUE}====== GitHub Termux Advanced Menu ======${RESET}"
   echo -e "🧾 Version: 1.0.4"
   echo -e "🌀 1. Clone a GitHub Repo"
@@ -309,3 +310,4 @@ while true; do
     17) echo "👋 Exiting..."; exit 0;;
     *) echo "❌ Invalid option!"; sleep 1;;
   esac
+done
