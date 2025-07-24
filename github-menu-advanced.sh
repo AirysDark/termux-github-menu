@@ -309,4 +309,3 @@ while true; do
     17) echo "👋 Exiting..."; exit 0;;
     *) echo "❌ Invalid option!"; sleep 1;;
   esac
-done
