@@ -260,7 +260,7 @@ while true; do
           2) git commit -am "Auto commit: $(date)";;
           3) echo "❌ Commit aborted.";;
     16)
-  echo -e "🛠️ 16. Git Repair Toolkit"
+      echo -e "\n🛠️ Git Repair Toolkit Menu:"
       echo " 1. Set upstream to origin/<branch>"
       echo " 2. Pull with --no-rebase"
       echo " 3. Pull with --rebase"
