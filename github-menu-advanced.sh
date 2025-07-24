@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/bash
 # Termux GitHub Menu Script
-# Version: 1.0.4
+# Version: 1.0.5
 # Author: AirysDark
 # Description: A terminal GitHub manager with pinning, sync, and GitHub API tools
 
 if [[ "$1" == "--version" ]]; then
-  echo "Termux GitHub Menu Script v1.0.4"
+  echo "Termux GitHub Menu Script v1.0.5"
   exit 0
 fi
 
@@ -201,7 +201,7 @@ while true; do
   [[ -f "$PINNED_FILE" ]] && cat "$PINNED_FILE" || echo "(None pinned)"
   echo
   echo -e "${BLUE}====== GitHub Termux Advanced Menu ======${RESET}"
-  echo -e "🧾 Version: 1.0.4"
+  echo -e "🧾 Version: 1.0.5"
   echo -e "🌀 1. Clone a GitHub Repo"
   echo -e "🔄 2. Pull Latest Changes"
   echo -e "📤 3. Push Local Changes (with backup)"
@@ -223,7 +223,18 @@ while true; do
 
   case $choice in
     1) read -p "Enter GitHub Repo URL: " url; cd "$GITHUB_DIR" && git clone "$url"; read -p "Press Enter to continue...";;
-    2) select_repo || continue; cd "$GITHUB_DIR/$repo" && git pull; read -p "Press Enter to continue...";;
+    2)
+      select_repo || continue
+      cd "$GITHUB_DIR/$repo" || return
+      branch=$(git symbolic-ref --short HEAD)
+      upstream=$(git rev-parse --abbrev-ref "$branch@{upstream}" 2>/dev/null)
+      if [[ -z "$upstream" ]]; then
+        echo "⚠️ No upstream set. Attempting to set to origin/$branch..."
+        git branch --set-upstream-to="origin/$branch" "$branch"
+      fi
+      git pull
+      read -p "Press Enter to continue..."
+      ;;
     3) backup_repo; cd "$GITHUB_DIR/$repo" && git add . && read -p "Commit message: " msg && git commit -m "$msg" && git push; read -p "Press Enter to continue...";;
     4) select_repo || continue; cd "$GITHUB_DIR/$repo" && git status; read -p "Press Enter to continue...";;
     5) select_repo || continue; cd "$GITHUB_DIR/$repo" && git add . && read -p "Commit message: " msg && git commit -m "$msg"; read -p "Press Enter to continue...";;
