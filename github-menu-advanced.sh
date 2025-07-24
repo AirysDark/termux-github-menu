@@ -217,10 +217,33 @@ while true; do
   echo -e "🧹 13. Unpin a Repo"
   echo -e "♻️ 14. Reset Pins & History"
   echo -e "🗑️ 15. Delete All Repositories"
+echo -e "16. 🚑 Git Repair Toolkit"
   echo -e "🚫 16. Quit and Close Termux"
   echo -e "${BLUE}=========================================${RESET}"
-  read -p "Choose an option [1-15]: " choice
+read -p "Choose an option [1-15]: " choice
 
+
+    16)
+      select_repo || continue
+      cd "$GITHUB_DIR/$repo" || continue
+      echo -e "\n${CYAN}Git Repair Options:${RESET}"
+      echo "1. Set upstream to origin/main"
+      echo "2. Pull using rebase"
+      echo "3. Pull using merge"
+      echo "4. Pull using fast-forward only"
+      echo "5. Show current remote branches"
+      echo "6. Cancel"
+      read -p "Select repair option [1-6]: " fix
+      case $fix in
+        1) git branch --set-upstream-to=origin/main ;;
+        2) git pull --rebase ;;
+        3) git pull --no-rebase ;;
+        4) git pull --ff-only ;;
+        5) git remote show origin ;;
+        *) echo "Cancelled." ;;
+      esac
+      read -p "Press Enter to continue..."
+      ;;
   case $choice in
     1) read -p "Enter GitHub Repo URL: " url; cd "$GITHUB_DIR" && git clone "$url"; read -p "Press Enter to continue...";;
     2) select_repo || continue; cd "$GITHUB_DIR/$repo" && git pull; read -p "Press Enter to continue...";;
