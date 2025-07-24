@@ -1,3 +1,5 @@
+# attentiom quit function has been remove
+
 # Termux GitHub Menu Script
 
 An advanced GitHub management tool built for Termux. Automates common Git tasks and GitHub API functions with a user-friendly bash menu.
