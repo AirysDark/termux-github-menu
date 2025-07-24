@@ -217,8 +217,8 @@ while true; do
   echo -e "🧹 13. Unpin a Repo"
   echo -e "♻️ 14. Reset Pins & History"
   echo -e "🗑️ 15. Delete All Repositories"
-  echo -e "🛠️ 17. Git Repair Toolkit"
-  echo -e "🚫 16. Quit and Close Termux"
+  echo -e "🛠️ 16. Git Repair Toolkit"
+  echo -e "🚫 17. Quit and Close Termux"
   echo -e "${BLUE}=========================================${RESET}"
   read -p "Choose an option [1-15]: " choice
 
@@ -259,6 +259,79 @@ while true; do
           1) git commit --amend -m "$msg";;
           2) git commit -am "Auto commit: $(date)";;
           3) echo "❌ Commit aborted.";;
+    16)
+  echo -e "🛠️ 16. Git Repair Toolkit"
+      echo " 1. Set upstream to origin/<branch>"
+      echo " 2. Pull with --no-rebase"
+      echo " 3. Pull with --rebase"
+      echo " 4. Pull with --ff-only"
+      echo " 5. Force Push"
+      echo " 6. Amend Last Commit"
+      echo " 7. Auto Commit and Push"
+      echo " 8. Git Log Viewer"
+      echo " 9. Git Stash"
+      echo "10. Git Stash Pop"
+      echo "11. Git Reset --hard"
+      echo "12. List Local Branches"
+      echo "13. Create New Branch"
+      echo "14. Delete a Branch"
+      echo "15. Diff vs origin"
+      echo "16. Show remotes"
+      echo "17. Open .git/config"
+      echo "18. Abort"
+      read -p "Choose [1-18]: " choice
+      select_repo || continue
+      cd "$GITHUB_DIR/$repo" || return
+      branch=$(git symbolic-ref --short HEAD)
+      case $choice in
+        1) git branch --set-upstream-to="origin/$branch" "$branch";;
+        2) git pull --no-rebase;;
+        3) git pull --rebase;;
+        4) git pull --ff-only;;
+        5) git push --force;;
+        6) git commit --amend;;
+        7) git add . && git commit -am "Auto commit: $(date)" && git push;;
+        8) git log --oneline --graph --all | less;;
+        9) git stash;;
+       10) git stash pop;;
+       11) git reset --hard;;
+       12) git branch;;
+       13) read -p "New branch name: " newbranch && git checkout -b "$newbranch";;
+       14) read -p "Branch to delete: " delbranch && git branch -d "$delbranch";;
+       15) git fetch && git diff origin/$branch;;
+       16) git remote -v;;
+       17) cat .git/config | less;;
+       18) echo "❌ Aborted.";;
+        *) echo "⚠️ Invalid sub-option.";;
+      esac
+      read -p "Press Enter to continue..."
+      ;;
+        2) git pull --no-rebase;;
+        3) git pull --rebase;;
+        4) git pull --ff-only;;
+        5) git push --force;;
+        6) git commit --amend;;
+        7) git add . && git commit -am "Auto commit: $(date)" && git push;;
+        8) git log --oneline --graph --all | less;;
+        9) git stash;;
+       10) git stash pop;;
+       11) git reset --hard;;
+       12) echo "❌ Aborted.";;
+        *) echo "⚠️ Invalid sub-option.";;
+      esac
+      read -p "Press Enter to continue..."
+      ;;
+        2) git pull --no-rebase;;
+        3) git pull --rebase;;
+        4) git pull --ff-only;;
+        5) git push --force;;
+        6) git commit --amend;;
+        7) git add . && git commit -am "Auto commit: $(date)" && git push;;
+        8) echo "❌ Aborted.";;
+        *) echo "⚠️ Invalid sub-option.";;
+      esac
+      read -p "Press Enter to continue..."
+      ;;
           *) echo "⚠️ Invalid option.";;
         esac
       fi
@@ -274,7 +347,7 @@ while true; do
     13) unpin_repo;;
     14) reset_history;;
     15) remove_all_repos;;
-    16) echo "👋 Exiting..."; exit 0;;
+    17) echo "👋 Exiting..."; exit 0;;
     *) echo "❌ Invalid option!"; sleep 1;;
   esac
 done
