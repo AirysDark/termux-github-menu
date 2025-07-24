@@ -221,6 +221,7 @@ echo -e "16. 🚑 Git Repair Toolkit"
   echo -e "${BLUE}=========================================${RESET}"
 read -p "Choose an option [1-16]: " choice
 
+case $choice in
 
     16)
       select_repo || continue
