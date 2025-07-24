@@ -1,11 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/bash
 # Termux GitHub Menu Script
-# Version: 1.0.6
+# Version: 1.1.0
 # Author: AirysDark
 # Description: A terminal GitHub manager with pinning, sync, and GitHub API tools
 
 if [[ "$1" == "--version" ]]; then
-  echo "Termux GitHub Menu Script v1.0.6"
+  echo "Termux GitHub Menu Script v1.1.0"
   exit 0
 fi
 
@@ -201,7 +201,7 @@ while true; do
   [[ -f "$PINNED_FILE" ]] && cat "$PINNED_FILE" || echo "(None pinned)"
   echo
   echo -e "${BLUE}====== GitHub Termux Advanced Menu ======${RESET}"
-  echo -e "🧾 Version: 1.0.6"
+  echo -e "🧾 Version: 1.1.0"
   echo -e "🌀 1. Clone a GitHub Repo"
   echo -e "🔄 2. Pull Latest Changes"
   echo -e "📤 3. Push Local Changes (with backup)"
@@ -236,8 +236,33 @@ while true; do
       read -p "Press Enter to continue..."
       ;;
     3) backup_repo; cd "$GITHUB_DIR/$repo" && git add . && read -p "Commit message: " msg && git commit -m "$msg" && git push; read -p "Press Enter to continue...";;
-    4) select_repo || continue; cd "$GITHUB_DIR/$repo" && git status; read -p "Press Enter to continue...";;
-    5) select_repo || continue; cd "$GITHUB_DIR/$repo" && git add . && read -p "Commit message: " msg && git commit -m "$msg"; read -p "Press Enter to continue...";;
+    4)
+      select_repo || continue
+      cd "$GITHUB_DIR/$repo" || return
+      echo "📊 Git status for $(basename "$repo")"
+      git status || echo "❌ Git status failed. Check if this is a valid repo."
+      read -p "Press Enter to continue..."
+      ;;
+    5)
+      select_repo || continue
+      cd "$GITHUB_DIR/$repo" || return
+      git add .
+      read -p "Commit message: " msg
+      if ! git commit -m "$msg"; then
+        echo -e "\n❌ Commit failed. Choose a fix:"
+        echo "1. Amend last commit"
+        echo "2. Commit all with default message"
+        echo "3. Abort"
+        read -p "Select [1-3]: " fix_choice
+        case $fix_choice in
+          1) git commit --amend -m "$msg";;
+          2) git commit -am "Auto commit: $(date)";;
+          3) echo "❌ Commit aborted.";;
+          *) echo "⚠️ Invalid option.";;
+        esac
+      fi
+      read -p "Press Enter to continue..."
+      ;;
     6) read -p "Git username: " name; git config --global user.name "$name"; read -p "Git email: " email; git config --global user.email "$email"; echo "✅ Git config updated."; read -p "Press Enter to continue...";;
     7) create_github_repo;;
     8) watch_and_push;;
