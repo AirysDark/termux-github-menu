@@ -218,9 +218,8 @@ while true; do
   echo -e "♻️ 14. Reset Pins & History"
   echo -e "🗑️ 15. Delete All Repositories"
 echo -e "16. 🚑 Git Repair Toolkit"
-  echo -e "🚫 16. Quit and Close Termux"
   echo -e "${BLUE}=========================================${RESET}"
-read -p "Choose an option [1-15]: " choice
+read -p "Choose an option [1-16]: " choice
 
 
     16)
@@ -260,7 +259,5 @@ read -p "Choose an option [1-15]: " choice
     13) unpin_repo;;
     14) reset_history;;
     15) remove_all_repos;;
-    16) echo "👋 Exiting..."; exit 0;;
-    *) echo "❌ Invalid option!"; sleep 1;;
   esac
 done
