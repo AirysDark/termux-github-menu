@@ -218,9 +218,9 @@ while true; do
   echo -e "♻️ 14. Reset Pins & History"
   echo -e "🗑️ 15. Delete All Repositories"
 echo -e "16. 🚑 Git Repair Toolkit"
-  echo -e "🚫 16. Quit and Close Termux"
+  echo -e "🚫 17. Quit and Close Termux"
   echo -e "${BLUE}=========================================${RESET}"
-  read -p "Choose an option [1-15]: " choice
+Choose an option [1-17]:
 
   case $choice in
     1) read -p "Enter GitHub Repo URL: " url; cd "$GITHUB_DIR" && git clone "$url"; read -p "Press Enter to continue...";;
