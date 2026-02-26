@@ -1,3 +1,4 @@
+
 import os
 from pathlib import Path
 
@@ -21,5 +22,6 @@ GITHUB_DIR = detect_github_dir()
 TOKEN_FILE = HOME / ".github_token"
 LAST_USED_FILE = HOME / ".termux_github_last_repo"
 PINNED_FILE = HOME / ".termux_github_pinned"
+LOG_FILE = HOME / ".termux_github_log"
 
 GITHUB_DIR.mkdir(parents=True, exist_ok=True)
