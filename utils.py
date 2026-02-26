@@ -1,38 +1,27 @@
 
 import subprocess
-from pathlib import Path
+from rich.console import Console
+from rich.panel import Panel
+from rich.prompt import Prompt
 from config import *
 import datetime
 
-def log(message):
-    with open(LOG_FILE, "a") as f:
-        f.write(f"[{datetime.datetime.now()}] {message}\n")
+console = Console()
 
 def run(cmd):
-    log(f"RUN: {cmd}")
+    console.print(f"[cyan]$ {cmd}[/cyan]")
     subprocess.run(cmd, shell=True)
 
-def get_token():
-    if TOKEN_FILE.exists():
-        return TOKEN_FILE.read_text().strip()
-    print("GitHub token not found.")
-    exit(1)
-
-def list_repositories():
-    return [r.name for r in GITHUB_DIR.iterdir() if r.is_dir()]
-
 def select_repo():
-    repos = list_repositories()
+    repos = [r.name for r in GITHUB_DIR.iterdir() if r.is_dir()]
     if not repos:
-        print("No repositories found.")
+        console.print("[red]No repositories found.[/red]")
         return None
 
-    print("\nRepositories:")
     for r in repos:
-        print("-", r)
+        console.print(f"- {r}")
 
-    repo = input("Repo name (blank=last used): ").strip()
-
+    repo = Prompt.ask("Repo (blank=last)")
     if not repo and LAST_USED_FILE.exists():
         return LAST_USED_FILE.read_text().strip()
 
@@ -40,5 +29,5 @@ def select_repo():
         LAST_USED_FILE.write_text(repo)
         return repo
 
-    print("Invalid repo.")
+    console.print("[red]Invalid repo[/red]")
     return None

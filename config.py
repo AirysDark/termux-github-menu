@@ -1,27 +1,20 @@
 
-import os
 from pathlib import Path
+import json
 
 HOME = Path.home()
+CONFIG_DIR = HOME / ".tgp"
+CONFIG_DIR.mkdir(exist_ok=True)
 
-POSSIBLE_PATHS = [
-    "/storage/emulated/0/GitHub",
-    f"{HOME}/storage/shared/GitHub",
-    "/sdcard/GitHub",
-    "/mnt/sdcard/GitHub",
-    "/storage/self/primary/GitHub",
-]
+ACCOUNTS_FILE = CONFIG_DIR / "accounts.json"
+LAST_USED_FILE = CONFIG_DIR / "last_repo.txt"
+GITHUB_DIR = HOME / "GitHub"
+GITHUB_DIR.mkdir(exist_ok=True)
 
-def detect_github_dir():
-    for path in POSSIBLE_PATHS:
-        if os.path.isdir(path):
-            return Path(path)
-    return HOME / "GitHub"
+def load_accounts():
+    if ACCOUNTS_FILE.exists():
+        return json.loads(ACCOUNTS_FILE.read_text())
+    return {}
 
-GITHUB_DIR = detect_github_dir()
-TOKEN_FILE = HOME / ".github_token"
-LAST_USED_FILE = HOME / ".termux_github_last_repo"
-PINNED_FILE = HOME / ".termux_github_pinned"
-LOG_FILE = HOME / ".termux_github_log"
-
-GITHUB_DIR.mkdir(parents=True, exist_ok=True)
+def save_accounts(data):
+    ACCOUNTS_FILE.write_text(json.dumps(data, indent=2))
