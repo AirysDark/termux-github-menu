@@ -2,7 +2,32 @@ from utils import run, pause
 from pathlib import Path
 import subprocess
 import os
+import json
 
+
+CONFIG_FILE = Path.home() / ".github_menu_config"
+
+
+# ----------------------------
+# Config Helpers
+# ----------------------------
+
+def load_config():
+    if CONFIG_FILE.exists():
+        try:
+            return json.loads(CONFIG_FILE.read_text())
+        except Exception:
+            return {}
+    return {}
+
+
+def save_config(cfg):
+    CONFIG_FILE.write_text(json.dumps(cfg, indent=2))
+
+
+# ----------------------------
+# Git Identity
+# ----------------------------
 
 def set_display_name():
     name = input("Git display username: ").strip()
@@ -21,6 +46,10 @@ def set_email():
     else:
         print("⚠️ No value entered.")
 
+
+# ----------------------------
+# HTTPS Credentials
+# ----------------------------
 
 def set_https_credentials():
     print("⚠️ Use a Personal Access Token (NOT your GitHub password)")
@@ -42,10 +71,15 @@ def set_https_credentials():
     print("Git will now auto-authenticate for clone/pull/push.")
 
 
+# ----------------------------
+# Authentication Test
+# ----------------------------
+
 def test_authentication():
-    print("Testing GitHub authentication...")
+    print("Testing GitHub authentication against API...")
+
     result = subprocess.run(
-        ["git", "ls-remote", "https://github.com"],
+        ["git", "ls-remote", "https://github.com/octocat/Hello-World"],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL
     )
@@ -56,6 +90,36 @@ def test_authentication():
         print("❌ Authentication failed.")
         print("Check your token permissions.")
 
+
+# ----------------------------
+# Repo Location Config
+# ----------------------------
+
+def set_repo_location():
+    cfg = load_config()
+    current = cfg.get("repo_path", "Auto-detected")
+
+    print(f"Current repository location: {current}")
+    new_path = input("Enter new repository folder path: ").strip()
+
+    if not new_path:
+        print("⚠️ No path entered.")
+        return
+
+    path_obj = Path(new_path).expanduser()
+
+    try:
+        path_obj.mkdir(parents=True, exist_ok=True)
+        cfg["repo_path"] = str(path_obj)
+        save_config(cfg)
+        print("✅ Repository location updated.")
+    except Exception as e:
+        print("❌ Failed to set location:", e)
+
+
+# ----------------------------
+# Show Current Config
+# ----------------------------
 
 def show_current_config():
     print("\n=== Current Git Config ===")
@@ -68,6 +132,16 @@ def show_current_config():
     else:
         print("⚠️ No HTTPS credentials stored.")
 
+    cfg = load_config()
+    if "repo_path" in cfg:
+        print("📁 Repository Location:", cfg["repo_path"])
+    else:
+        print("📁 Repository Location: Auto-detected")
+
+
+# ----------------------------
+# Main Execute Menu
+# ----------------------------
 
 def execute():
     while True:
@@ -80,6 +154,7 @@ def execute():
 3. Set HTTPS Credentials
 4. Test Authentication
 5. Show Current Config
+6. Set Repositories Location
 0. Back
 """)
 
@@ -99,6 +174,9 @@ def execute():
             pause()
         elif choice == "5":
             show_current_config()
+            pause()
+        elif choice == "6":
+            set_repo_location()
             pause()
         elif choice == "0":
             break
