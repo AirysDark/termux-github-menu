@@ -1,14 +1,11 @@
 
-import time
+import queue
+job_queue = queue.Queue()
 
-queue = []
+def submit(job):
+    job_queue.put(job)
 
-def add_job(job):
-    queue.append(job)
-
-def run():
-    while True:
-        if queue:
-            job = queue.pop(0)
-            print("Executing:", job)
-        time.sleep(5)
+def get_next():
+    if not job_queue.empty():
+        return job_queue.get()
+    return None
